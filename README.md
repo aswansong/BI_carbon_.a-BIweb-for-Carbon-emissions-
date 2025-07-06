@@ -1,6 +1,7 @@
-[**简体中文**](#-bi-carbon-基于双碳大数据的可视化bi系统) | [**English**](#-bi-carbon-a-visual-bi-system-for-dual-carbon-big-data)
+[**简体中文**](#bi-carbon-基于双碳大数据的可视化bi系统) | [**English**](#bi-carbon-a-visual-bi-system-for-dual-carbon-big-data)
+---
 
-# BI-carbon: 基于“双碳”大数据的可视化BI系统
+# BI-carbon: 基于双碳大数据的可视化BI系统
 
 [![Python](https://img.shields.io/badge/Python-3.8-blue.svg)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/Django-4.0.2-green.svg)](https://www.djangoproject.com/)
@@ -8,7 +9,6 @@
 [![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
 ---
-
 **BI-carbon** 是一个公益性质的轻量级商业智能（BI）平台，旨在将中国的“双碳”战略目标与大数据可视化技术相结合。我们致力于打破传统数据平台的壁垒，让企业、研究人员、政府乃至普通大众，都能以最直观的方式获取和理解碳排放相关数据。
 
 本平台以[中国碳核算数据库 (CEADs)](https://www.ceads.net.cn/) 的授权数据为基础，通过友好的交互界面，提供数据可视化、深度分析报告和自定义数据探索等功能，促进“双碳”知识的普及与交流。
