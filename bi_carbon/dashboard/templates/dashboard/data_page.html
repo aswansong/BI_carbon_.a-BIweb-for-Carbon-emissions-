@@ -1,0 +1,952 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <title>BI平台-数据可视化</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="stylesheet" href="{% static 'sdk/sdk.css' %}" />
+    <link rel="stylesheet" href="{% static 'sdk/helper.css' %}" />
+    <link rel="stylesheet" href="{% static 'sdk/iconfont.css' %}" />
+    <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+<!--    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js"></script> -->
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+    <link rel="icon" type="image/x-icon" href="{% static 'first_page/assets/favicon.ico'%}" />
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="{% static 'first_page/css/styles.css' %}" rel="stylesheet" />
+            <h5 style="text-align:center;"><font color="#87cefa">数据展示</font></h5>
+            <h6 style="text-align:center;"><font color="#87cefa">可视化</font></h6>
+        <hr>
+    <div id="main" style="width: 85%;height:600px;top:30%;bottom: 0;left: 0;right:0;margin: auto;"></div>
+    <style>
+      html,
+      body,
+      .app-wrapper {
+        position: relative;
+        width: 100%;
+        height: 120%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+
+
+  <body id="page_top">
+    <script src="{% static 'sdk/sdk.js' %}"></script>
+    <script src="http://api.map.baidu.com/api?v=2.0&ak=SGUVWq4DXvkGCwYoTYzl1d3F4TvWW0aW"></script>
+            <!-- Navigation-->
+        <div id="root" class="app-wrapper"></div>
+      <script src="{% static 'sdk/sdk.js' %}"></script>
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="/">双碳BI</a>
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="/about">关于我们</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/data_page">数据展示</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/carbon_trade">碳排放交易数据平台</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/comment">评论区</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    <script type="text/javascript">
+var chartDom = document.getElementById('main');
+var myChart = echarts.init(chartDom);
+var option;
+
+var updateFrequency = 600;
+var dimension = 0;
+
+var countryColors =
+  {  Brazil: '#849113',
+      China: '#ab1d28',
+      "EU27 & UK":'#215293',
+      France:'#76a870',
+      Germany:'rgba(208,137,86,0.5)',
+      India:'#7d5388',
+      Italy:'#754e13',
+      Japan:'#324420',
+      ROW:'#245737',
+      Russia:'#0f260b',
+      Spain:'#62400d',
+      UK:'#940410',
+      US:'#2d3f2b',
+  };
+
+$.when(
+    $.getJSON('https://cdn.jsdelivr.net/npm/emoji-flags@1.3.0/data.json'),
+    $.getJSON("{% static 'package1.json' %}")
+).done(function (res0, res1) {
+    var flags = res0[0];
+    var data = res1[0];
+    var years = [];
+    for (let i = 0; i < data.length; ++i) {
+        if (years.length === 0 || years[years.length - 1] !== data[i][2]) {
+            years.push(data[i][2]);
+        }
+    }
+
+    function getFlag(countryName) {
+        if (!countryName) {
+            return '';
+        }
+        return (flags.find(function (item) {
+            return item.name === countryName;
+        }) || {}).emoji;
+    }
+    var startIndex = 1;//从1900开始
+    var startYear = years[startIndex];
+    console.log(data);
+    console.log(startYear);
+    console.log(flags);
+    console.log(years);
+
+
+    var option = {
+        title:{
+            text:"全球碳排放（部分国家）",
+            left:"80%",
+            bottom:'35%'
+        },
+        grid: {
+            top: 10,
+            bottom: 30,
+            left: 150,
+            right: 80
+        },
+        xAxis: {
+            max: 'dataMax',
+            label: {
+                formatter: function (n) {
+                    return Math.round(n);
+                }
+            }
+        },
+        dataset: {
+            source: data.slice(1).filter(function (d) {
+                return d[2] === startYear;
+            })
+        },
+        yAxis: {
+            type: 'category',
+            inverse: true,
+            max: 12,
+            axisLabel: {
+                show: true,
+                textStyle: {
+                    fontSize: 14
+                },
+                formatter: function (value) {
+                    return value + '{flag|' + getFlag(value) + '}';
+                },
+                rich: {
+                    flag: {
+                        fontSize: 0,
+                        padding: 5
+                    }
+                }
+            },
+            animationDuration: 300,
+            animationDurationUpdate: 300
+        },
+        series: [{
+            realtimeSort: true,
+            seriesLayoutBy: 'column',
+            type: 'bar',
+            itemStyle: {
+                color: function (param) {
+                    return countryColors[param.value[1]] || '#406ebe';
+                }
+            },
+            encode: {
+                x: dimension,
+                y: 3
+            },
+            label: {
+                show: true,
+                precision: 1,
+                position: 'right',
+                valueAnimation: true,
+                fontFamily: 'monospace'
+            }
+        }],
+        // Disable init animation.
+        animationDuration: 0,
+        animationDurationUpdate: updateFrequency,
+        animationEasing: 'linear',
+        animationEasingUpdate: 'linear',
+        graphic: {
+            elements: [{
+                type: 'text',
+                right: 160,
+                bottom: 60,
+                style: {
+                    text: startYear,
+                    font: 'bolder 80px monospace',
+                    fill: 'rgb(231,145,145)'//年份的颜色
+                },
+                z: 100
+            }]
+        }
+    };
+
+    // console.log(option);
+    myChart.setOption(option);
+
+    for (var i = startIndex; i < years.length - 1; ++i) {
+        (function (i) {
+            setTimeout(function () {
+                updateYear(years[i + 1]);
+            }, (i - startIndex) * updateFrequency);
+        })(i);
+    }
+
+    function updateYear(year) {
+        var source = data.slice(1).filter(function (d) {
+            return d[2] === year;
+        });
+        option.series[0].data = source;
+        option.graphic.elements[0].style.text = year;
+        myChart.setOption(option);
+    }
+})
+option && myChart.setOption(option);
+</script>    
+    <script type="text/javascript">
+     (function () {
+        let amis = amisRequire('amis/embed');
+        // 通过替换下面这个配置来生成不同页面
+        let amisJSON = {
+                  "type": "page",
+                  // "title": "数据展示",
+                  "body": [
+                    {
+                        "type":'grid-2d',
+                        'grids':[
+                        {
+                        'x':2,
+                        'y':1,
+                        'h':2,
+                        'w':10,
+                        'type':'chart',
+                        'name':'provinces_sales_map',
+                        'height':"600px",
+                        'api':"/api/global/charts_data?type=provinces_carbon_map",
+                        'config':{
+                            "backgroundColor": "transparent",
+                            'title':{
+                              'text': '全国各省碳排放情况',
+                              'left': 'center'
+                            },
+                            'tooltip':{
+                              'trigger': 'item' 
+                            },
+                            'bmap':{
+                              'zoom': 5,
+                              'roam': true,
+                            },
+                            'visualMap':{
+                              'backgroundColor':'rgba(0,0,0,0)',
+                              'show':true,
+                              'top':'top',
+                              'min':'${min_value}',
+                              'max':'${max_value}',
+                              'seriesIndex':0,
+                              'calculable':true,
+                              'inRange': {
+                                  'color': ['blue','gray','yellow', 'red','red']
+                              }
+                            },
+                            'series': [{
+                              'name': '各省的碳排放额',
+                              'type': 'heatmap',
+                              'coordinateSystem': 'bmap',
+                              'data': '${provinces_carbon}',
+                            }]
+                                }
+                        }
+                        ]
+                    },
+                    {
+                      "type": "button",
+                      "size":'lg',
+                      "label": "点击此处查看数据报告",
+                      "actionType": "drawer",
+                      "drawer": {
+                        "position": "right",
+                        "resizable": true,
+                        "title": "数据分析报告",
+                        "body": [
+                        {
+    "type": "tabs",
+    "tabs": [
+        {
+            "title": "主要指标",
+            "body": [
+                {
+                    "type": "markdown",
+                    "value": "### 2019上海市碳排放情况\n【分析报告为个人看法，仅作抛砖引玉之用，欢迎各位用户评论区发表见解、共同讨论】\n该图列出了2019年上海市在部分类别活动中的碳排量，并列明了三大化石燃料（煤、石油、天然气）在其中各自对应了多少。\n\n我国目前的能源结构是以煤为主，多样化发展，受自给率约束。局限在上海一座城市上，我们能明显看出，对于不同类型的生产活动，所用到的能源类别也不尽相同。在排放量最高的电热气水生产供应中，使用煤及煤制品的占比约87%，天然气占比约11.4%；同样的情况出现在金属的冶炼和压制中，煤的占比近91%，天然气占比约8.3%，仅有约1%来自石油产品。但是在运输仓储邮电服务和石油的加工和炼焦中，石油产品的使用量超过了99%，其中前者又有80%以上来自Kerosene煤油和Fuel Oil燃油两类，后者则有超过80%来自Refinery Gas炼厂气。值得注意的是，在市区消耗urban中，仅有不到1%选择煤炭能源，超过六成都采用了石油供应。\n欢迎大家评论区指正或补充以上内容，发表自己的见解。\n\n>Coal：Washed Coal(Raw Coal, Cleaned Coal, Other Washed Coal)\nCoking Products(Briquettes, Coke, Coke Oven Gas, Other Gas, Other Coking Products)\nPetroleum: Crude Oil, Gasoline, Kerosene, Diesel Oil, Fuel Oil, LPG, Refinery Gas \nand Other Petroleum Products\nNatural Gas: Natural Gas\nSupply: Production and Supply of Electric Power, Steam and Hot Water \nTransportation: Transportation, Storage, Post and Telecommunication Services \nMetals: Smelting and Pressing of Ferrous Metals, Smelting and Pressing of Nonferrous Metals, and Metal Products\nPetroleum: Petroleum Processing and Coking\nChemicals: Raw Chemical Materials and Chemical Products\n>\n### 2019中国部分省市CO2排量\n【分析报告为个人看法，仅作抛砖引玉之用，欢迎各位用户评论区发表见解、共同讨论】\n该图选择了我国四个直辖市和三个省份，将各地区的排放量按生产活动的类别细分，比较各省市之间的差异。\n>Supply：Production and Supply of Electric Power, Steam and Hot Water\nTransportation：Transportation, Storage, Post and Telecommunication Services\nPetroleum: Petroleum Processing and Coking\n>\n首先从七个地区占比都最高的Supply开始。这部分数值最大的是山西省，在整个图表中也是最高的一个；紧随其后的是天津和浙江，二者相差不多；接着是上海和北京，最后是云南。因为山西的Supply数值几乎要追上四个直辖市的总和，并且这里采用的是按人数算术的数值，刨去了大部分人口影响（仍有人口密度等特征，但数值差异过大），所以居民对电热气水的生活需求已经不足以解释这一现象。山西是我国著名的煤炭能源大省，煤炭储备和开采量均列全国第一；虽然山西在加速转型，但目前为止这仍是山西省的主要产业。这对山西的碳排放影响很大。不仅开采煤炭资源本身就需要大量的电热气水，这同时也会改变山西的资源结构，让山西对煤炭的依赖更深，涉及到发电等方方面面。此外，我们结合源数据，山西省在黑色金属（铁系金属）的冶炼和压延数据也非常高，这让山西的能源产出不止局限在煤炭，也为山西的碳排放数据“添砖加瓦“。在这样的背景下，山西的电热气水生产供应值如此高也就可以被解释了。再到天津和浙江，从源数据来看，天津的黑色金属和浙江的非金属矿物产品（另有说法为水泥制造）数据也遥遥领先。对于上海和北京，我们在他们二者的对比图“pie-nest：北京上海两地碳排放去向对比”中已经分析过他们的产业差异。对于云南省，云南省闻名世界的主要产业是旅游业，能源产业鲜有涉及。\n\n因为山西省的Supply数据太大，让许多数值较小的指标差异不明显，所以我们点击隐藏Supply指标来继续分析。现在最高的指标是Transportation，最突出的两个地区是北京和上海：上海作为中国经济的一个重心，对内贸易和对外销售量都很大，运输仓储和邮电服务的消耗较大可以理解；而北京作为中国的首都也是不言自明。\n\n继续隐藏Transportation，接着分析Urban。在“pie-nest：北京上海两地碳排放去向对比”图中，我们对这一指标的分析借助了城镇面积和人口密度，在这里也仍然适用。但是由于我们加入了面积较大的省，省内发展水平不一，所以我们引入城镇化率来一起分析。在所选区域中，人口密度最高的是天津市的4939（单位为人/平方公里，下同），位于我国第三名（统计局发布），接着是上海（3830）和山西（3804），云南（3133），浙江（2064），重庆（2012），北京人口密度最低（1137）。城镇率水平最高的是上海（88.3%），北京（86.6%），天津（83.48%），位于我国前三名（国家统计年鉴发布），接着是浙江（70%）第六名，重庆（66.8%）第八名，山西（59.55%）第十五名，云南（48.91%）第二十九名。北京以其高城镇化率和高建成区面积位列第一；在天津市人口密度高出上海近30%的情况下，其城镇化率仅与上海相差约5%，故超过上海成为第二；上海第三。综合考虑几项因素，后四名没有反常顺次排出。\n\n隐藏已分析指标后，引入注目的就是Petroleum。石油制品作为三大化石能源之一，这一项我们在Supply时已经提到，这里不再介绍。\n\n欢迎大家评论区指正或补充以上内容，发表自己的见解。\n"
+                }
+            ]
+        },
+        {
+            "title": "对比饼图",
+            "body": [
+                {
+                    "type": "markdown",
+                    "value": "### 2019全年世界各国碳排放数据对比（百吨）\n【分析报告为个人看法，仅作抛砖引玉之用，欢迎各位用户评论区发表见解、共同讨论】\n该图比较中国与其他国家的碳排放数据，选择了世界第一大经济体美国，国土面积最大的国家俄罗斯，人口与中国相近的印度，以及欧盟28国（英国于2020年1月31日正式脱欧）。这五个经济体是2019全球碳排放总量的前五名。\n中国碳排放总量占全球第一。在各国碳排放各类别占比图中，我们可以直观的看到这些碳被用在了什么地方，也分析了个中缘由；在这张图中，结合图表的源数据，我们尝试思考：这些国家为什么排放这么多碳。\n从整体经济角度看，我国经济发展迅速，重工业在国民经济中的占比过大。2019年，中国的GDP总额全球占比为16.34%（世行公布），而中国的粗钢产量达到全球的53.3%，水泥产量占56.8%（USGS公布）且仍有增长。重工业的发展依赖于大量能源和资源的投入，这种高投入、高消耗、高排放的工业模式会造成大量CO2排放。此外，中国是全球第一大生产制造国，在全球化贸易中，我国大多担任生产制造的角色。我国出口贸易的快速增长是以大量消耗能源和资源，并在国内大量排放污染物及排放CO2等作为代价的，国外的最终消费者消费了大量我国的能源和碳排放。这导致我国在商品贸易上处于顺差，但在生态贸易上却处于逆差。\n从人口角度看，我国是世界人口第一大国，人口基数为我国的碳排放奠定了高基数。那么刨去人口的影响呢？在我们选择的五个经济体中，如果比较人均碳排放数据（ICO公布），只有美国仍然停留在前十五名的队伍里；其余四者都不再居于前列。\n此外，各国能源结构也会通过能源消耗排放对总排量有很重要的影响，国家的总排量和各国的发展现状，人口特征等等有密切联系。这一点我们可以在各国碳排放各类别占比图中直观感受，在那里详细补充探讨。\n欢迎大家评论区指正或补充以上内容，发表自己的见解。\n### 北京上海两地碳排放去向对比\n【分析报告为个人看法，仅作抛砖引玉之用，欢迎各位用户评论区发表见解、共同讨论】\n该图将北京上海两地的碳排放数据按消耗途径分类，主要比较各消耗途径在全市全年总排放中所占的比重差异（分类方式仅为个人想法）。\n\n从图表中可以直观看出，北京上海两市的碳排放去向排在首位的仍是电热气水、天然气和自来水等市民的生活供应，且两市占比相差不多（北京多3%）；紧随其后的则是运输仓储和邮电服务，二者差异为4%。我们已知北京市2019年常住人口（2153.6万）（北京市统计局发布）比上海市（2428.14万）（上海市统计局发布）约少10%，那么如果除去人口影响，这两项的差异会进一步减小，因为我们认为该差异在合理范围内。而接下来的Industry，在北京仅占3.71%，在上海却占到26.39%；这和两个城市的生产活动有关。结合源数据，上海的Industry中，仅Metals相关的金属生产就达到了30.73MtCO2，占上海的60%，是北京总值的十倍。在Public一项中，北京占比20.02%，约为上海（8.34%）的2.5倍。对这一项的分析，我们可以结合城市面积来分析：北京城乡建设用地规模为2921平方公里（《2015年城市建设统计年鉴》发布），上海的建成区面积为999平方公里（《2015年城市建设统计年鉴》发布，数据与国家统计局相同）；在北京市其他项与上海持平或差异不大时，北京拥有约上海市三倍的城乡建设用地规模，这或许是Public占比高的主要原因。\n欢迎大家评论区指正或补充以上内容，发表自己的见解。\n\n>Inhabitant: \nProduction and Supply of Electric Power, Steam and Hot Water       电热气水的生产供应\nProduction and Supply of Gas                                      天然气的生产供应\nProduction and Supply of Tap Water                                自来水的生产供应\nTransportation：\nTransportation, Storage, Post and Telecommunication Services      运输、仓储、邮电服务\nIndustry：\nFarming, Forestry, Animal Husbandry, Fishery and Water Conservancy         农林牧副渔\n以及表中列示的其他归属于Industry项的字段\nPublic：\nUrban, Rural\nWholesale, Retail Trade and Catering Services                 批发、零售贸易和餐饮服务\n\n"
+                }
+            ]
+        },
+        {
+            "body": [
+                {
+                    "type": "markdown",
+                    "value": "### 2019世界各国碳排放各类别占比\n\n【分析报告为个人看法，仅作抛砖引玉之用，欢迎各位用户评论区发表见解、共同讨论】\n该图选择2019年世界碳排放量前四名的中国、美国、欧盟（英国2020年正式脱欧，一并记入）、印度，统计各项消耗占各国总排量的比重。\n从世界整体角度看，所占比重从高到低排序依次是Power、Industry、Ground Transport、Residential、Aviation。这个顺序在中国和印度两国仍然适用。但是在美国和欧盟，Ground Transport占比超过Industry居第二位。这和我们在图表 “bar-2019全年世界各国碳排放数据对比（百吨）” 中的分析可以相互印证，发达国家和发展中国家不同的经济模式对各自的碳排放有重大影响。\n从Power角度看，我们从各国的能源结构差异入手尝试分析原因。中国目前的能源结构是以煤为主，但转型脚步在加快，能源结构持续优化。2019年我国能源生产结构中，原煤占比68.8%，原油占比6.9%，天然气占比5.9%，水电、核电、风电等占比18.4%（国家统计局发布）。而印度过度依赖污染严重的化石能源，仅从发电一项来看，煤炭发电占到印度总发电量的65%以上，而可再生能源的占比只有11%（印度中央电力管理局发布）。与此不同，发电部门作为美国能源消费第一大户，从2016年起天然气成为了第一大发电用能源，所占的比重不断提高，2020年高达40%，可再生能源为21%，核电为19%，煤炭只占19%（美国能源信息署发布）。发电用煤迅速下降，极大推动了美国的碳达峰。美国能源消费结构在2019年发生了标志性的变化，当年由水力发电、风能、太阳能、地热能、生物质能等构成的可再生能源，130多年来首次超过煤炭，成为第三大能源。加上核能和非化石能源，三者已经占到美国一次能源消费总量的20%。毋庸置疑，能源消费结构的不同会直接导致碳排放的质变。从Industry角度看，在全球化贸易中，需要大量能源消耗、高排放的生产制造一环多在发展中国家进行，即制造大国需要为全球消费者的碳排放买单。据IEA统计，全球工业、交通运输业分别贡献为18.4%和24.6%。中国的情况是工业、交通运输业分别贡献27.9%、9.7%。我国来自工业的数据比全球高出约50%，交通运输业却仅为全球数据的约1/3。\n从Residential角度呢？这个类别应该和人口息息相关；在人口特征中，我们不仅需要考虑人口数量，人口密度也是重要因素。在选取的四个国家中，印度人口密度高居全国第五，中国位于16，而美国仅为33，欧盟各国多数位于20及以后。可以看到，人口密度与Residential所占的比重呈负相关，这也符合我们的逻辑。\n总的来讲，发达国家和发展中国家碳排放的各项来源比重有明显不同，发展中国家产出更多的是Industry，而发达国家的Transport和Aviation则会贡献更多比重。\n欢迎大家评论区指正或补充以上内容，发表自己的见解。"
+                }
+            ],
+            "title": "五之扇形"
+        }
+    ],
+    "tabsMode": "chrome",
+    "mountOnEnter": true
+}
+                        ]
+                      }
+                    },
+                    {
+                      "type": "tabs",
+                      "className":'mb-5',
+                      "mode":'vertical',
+                      "tabs": [
+                        {
+                          "title": "主要指标",
+                          "tab": [
+                            {
+                              "type": "grid",
+                              "columns": [
+                                {
+                                  "body": [
+                                    {
+                                      "type": "chart",
+                                      "height":'500px',
+                                      "backgroundColor": "transparent",
+                                      "config": {
+                                                  'title':{
+                                                      'text': '2019年上海市碳排放情况',
+                                                      'left': 'center',
+                                                      "bottom":'4%',
+                                                      'textStyle':{
+                                                        'fontSize':16,
+                                                        'width':60,
+                                                      }
+
+                                                    },
+                                                  'tooltip': {
+                                                    'trigger': 'axis',
+                                                    'axisPointer': {
+                                                      'type': 'cross',
+                                                      'crossStyle': {
+                                                        'color': '#999'
+                                                      }
+                                                    }
+                                                  },
+                                                  'toolbox': {
+                                                    'feature': {
+                                                      'dataView': { 'show': true, 'readOnly': false },
+                                                      'magicType': { 'show': true, 'type': ['line', 'bar'] },
+                                                      'restore': { 'show': true },
+                                                      'saveAsImage': { 'show': true }
+                                                    }
+                                                  },
+                                                  'legend': {
+                                                    'data': ['Category',  'Coal','Petroleum','Natural Gas']
+                                                  },
+                                                  'xAxis': [
+                                                    {
+                                                      'type': 'category',
+                                                      'data': ['Others', 'Chemicals', 'Petroleum', 'Urban', 'Metals', 'Transportation', 'Supply'],
+                                                      'axisPointer': {
+                                                        'type': 'shadow'
+                                                      }
+                                                    }
+                                                  ],
+                                                  'yAxis': [
+                                                    {
+                                                      'type': 'value',
+                                                      'name': 'Coal',
+                                                      'min': 0,
+                                                      'max': 65,
+                                                      'interval': 13,
+                                                      'axisLabel': {
+                                                        'formatter': '{value} MtCO2'
+                                                      }
+                                                    },
+                                                    {
+                                                      'type': 'value',
+                                                      'name': 'Petroleum&Natural Gas',
+                                                      'min': 0,
+                                                      'max': 65,
+                                                      'interval': 13,
+                                                      'axisLabel': {
+                                                        'formatter': '{value} MtCO2'
+                                                      }
+                                                    }
+                                                  ],
+                                                  'series': [
+                                                    {
+                                                      'name': 'Coal',
+                                                      'type': 'bar',
+                                                      'tooltip': {
+                                                        valueFormatter: function (value) {
+                                                          return value + ' MtCO2';
+                                                        }
+                                                      },
+                                                      'data': [
+                                                        10.052, 1.21, 0.024, 0.032, 25.34, 0.00029, 54.51
+                                                      ]
+                                                    },
+                                                    {
+                                                      'name': 'Petroleum',
+                                                      'type': 'bar',
+                                                      'color':'rgba(77, 92, 17, 1)',
+                                                      'tooltip': {
+                                                        valueFormatter: function (value) {
+                                                          return  value + ' MtCO2';
+                                                        }
+                                                      },
+                                                      'data': [
+                                                        15.63,0.11,6.48,5.656,0.28,51.656,1.15
+                                                      ]
+                                                    },
+                                                    {
+                                                      'name': 'Natural Gas',
+                                                      'type': 'bar',
+                                                      'yAxisIndex': 1,
+                                                      'tooltip': {
+                                                        valueFormatter: function (value) {
+                                                          return value+ ' MtCO2';
+                                                        }
+                                                      },
+                                                      'data': [5.369, 1.59, 0.034, 3.01, 2.324, 0.1945, 7.17]
+                                                    },
+                                                    {
+                                                      'name': 'Total Consumption',
+                                                      'type': 'line',
+                                                      'yAxisIndex': 1,
+                                                      'tooltip': {
+                                                        valueFormatter: function (value) {
+                                                          return value+ ' MtCO2';
+                                                        }
+                                                      },
+                                                      'data': [32.15, 2.91, 6.54, 8.699, 27.94, 51.85, 62.83]
+                                                    }
+                                                  ]
+                                                },
+                                      "replaceChartOption": true
+                                    }
+                                  ]
+                                },
+                                {
+                                  "body": [
+                                    {
+                                      "type": "chart",
+                                      "height":'500px',
+                                      "config": {
+                                          'title': {
+                                            'text': '注:以2019年常住人口平均 单位:吨/人',
+                                            'left': 'center',
+                                            "top":"15%",
+                                            'textStyle':{
+                                              'fontSize':14,
+                                              'width':60,
+                                              'color': "rgba(133, 106, 106, 1)",
+                                            }
+                                          },
+                                          'tooltip': {
+                                            'trigger': 'axis',
+                                            'axisPointer': {
+                                              'type': 'shadow'
+                                            }
+                                          },
+                                          'legend': {},
+                                          'grid': {
+                                            'left': '3%',
+                                            'right': '4%',
+                                            'bottom': '3%',
+                                            'containLabel': true
+                                          },
+                                          'xAxis': [
+                                            {
+                                              'type': 'category',
+                                              'data': ['上海(2428.14万人)', '北京(2153.6万人)', '天津(1561.83万人)', '重庆(3124.32万人)', '浙江(5850万人)', '山西(3729.22万人)', '云南(4858.3万人)']
+                                            }
+                                          ],
+                                          'yAxis': [
+                                            {
+                                              'type': 'value'
+                                            }
+                                          ],
+                                          'series': [
+                                        {
+                                              'name': 'Supply',
+                                              'type': 'bar',
+                                              'emphasis': {
+                                                'focus': 'series'
+                                              },
+                                              'data': [2.59, 1.48, 4.34, 1.91, 4.07, 8.9, 0.95],
+                                                'markLine': {
+                                                'lineStyle': {
+                                                  'type': 'dashed'
+                                                },
+                                                'data': [[{ type: 'median' }, { type: 'max' }]]
+                                              }
+                                            },
+                                            {
+                                              'name': 'Transportation',
+                                              'type': 'bar',
+                                              'emphasis': {
+                                                'focus': 'series'
+                                              },
+                                              'data': [2.14, 1.25, 0.56, 0.59, 0.47, 0.49, 0.55]
+                                            },
+
+                                            {
+                                              'name': 'Urban',
+                                              'type': 'bar',
+                                              'stack': '1',
+                                              'emphasis': {
+                                                'focus': 'series'
+                                              },
+                                              'data': [0.36, 0.65, 0.499, 0.234, 0.18, 0.13, 0.07]
+                                            },
+                                            {
+                                              'name': 'Services',
+                                              'type': 'bar',
+                                              'stack': '1',
+                                              'emphasis': {
+                                                'focus': 'series'
+                                              },
+                                              'data': [0.22, 0.11, 0.17, 0.11, 0.07, 0.11, 0.08]
+                                            },
+                                            {
+                                              'name': 'Rural',
+                                              'type': 'bar',
+                                              'stack': '1',
+                                              'data': [0.09, 0.06, 0.09, 0.06, 0.13, 0.17, 0.15],
+                                              'emphasis': {
+                                                'focus': 'series'
+                                              },
+                                            },
+                                            {
+                                              'name': 'Construction',
+                                              'type': 'bar',
+                                              'stack': '1',
+                                              'emphasis': {
+                                                'focus': 'series'
+                                              },
+                                              'data': [0.08, 0.05, 0.23, 0.06, 0.09, 0.055, 0.056]
+                                            },
+                                            {
+                                              'name': 'Petroleum',
+                                              'type': 'bar',
+                                              'stack': '1',
+                                              'emphasis': {
+                                                'focus': 'series'
+                                              },
+                                              'data': [0.27, 0.004, 0.33, 0.005, 0.11, 1.098, 0.06]
+                                            }
+                                          ]
+                                        },
+                                      "replaceChartOption": true
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "title": "对比饼图",
+                          "tab": [
+                            {
+                              "type": "grid",
+                              "columns": [
+                                {
+                                  // "x":1,
+                                  // "y":1,
+                                  // "h":1,
+                                  // "w":6,
+                                  "type": "chart",
+                                  "height":'500px',
+                                  "config": {
+                                      'title': [
+                                        {
+                                          'text': '2019全年世界各国碳排放对比\n(百吨)',
+                                          'left': "70%",
+                                          'top': "85%",
+                                        }
+                                      ],
+                                      'polar': {
+                                        'radius': [30, '80%']
+                                      },
+                                      'angleAxis': {
+                                        'max': 65300000,
+                                        'startAngle': 180
+                                      },
+                                      'radiusAxis': {
+                                        'type': 'category',
+                                        'data': ['RUS','EU28', 'IND', 'US', 'CHN']
+                                      },
+                                      'tooltip': {},
+                                      'color': [
+                                        '#3CB371',
+                                        '#2E8B57',
+                                        '#6495ED',
+                                        '#CD853F',
+                                        '#8B4513',
+                                    ],
+                                      'series': {
+                                      'type': 'bar',
+                                      'data': [ ],
+                                        'colorBy': 'data',
+                                        'data': [9298151.143, 18370970.9, 14424560.78, 29048676.62, 64374291.25],
+                                        'coordinateSystem': 'polar',
+                                        'label': {
+                                            'show': false,
+                                              'position': 'top',
+                                            'formatter': '{c}'
+                                            }
+                                          }
+                                        },
+                                     "replaceChartOption": true
+                                },                       
+                                {
+                                    // "x":1,
+                                    // "y":2,
+                                    // "h":1,
+                                    // "w":6,
+                                      "type": "chart",
+                                      "height":'500px',
+                                      "config": {
+                                          'title': {
+                                            'text': '北京上海两地碳排放去向对比',
+                                            'subtext': 'Total:北京88.16MtCO2 上海192.91MtCO2',
+                                            'left': "70%",
+                                            'top': "70%",
+                                          },
+                                          'tooltip': {
+                                            'trigger': 'item',
+                                            'formatter': '{a} <br/>{b}: {c} ({d}%)'
+                                          },
+                                          'legend': {
+                                            'data': [
+                                              'Public',
+                                              'Inhabitant',
+                                              'Manufacturing Industry',
+                                              'Construction',
+                                              'Minerals Mining and Dressing',
+                                              'Scrap and waste',
+                                              'Others'
+                                            ]
+                                          },
+                                            'series': [
+                                            {
+                                              'name': '上海市',
+                                              'type': 'pie',
+                                              'selectedMode': 'single',
+                                              'radius': [0, '30%'],
+                                              'label': {
+                                                position: 'inner',
+                                                fontSize: 14
+                                              },
+                                              'labelLine': {
+                                                show: false
+                                              },
+                                              'data': [
+                                                { value: 65.31, name: 'Inhabitant' },
+                                                { value: 51.85, name: 'Transportation' },
+                                                { value: 50.915, name: 'Industry ' },
+                                                { value: 16.09, name: 'Public' },
+                                                { value: 1.95, name: 'Construction' },
+                                                { value: 0.0197, name: 'Scrap and waste' },
+                                                { value: 6.78, name: 'Others' }
+                                              ]
+                                            },
+                                            {
+                                              'name': '北京市',
+                                              'type': 'pie',
+                                              'radius': ['45%', '70%'],
+                                              'labelLine': {
+                                                'length': 30
+                                              },
+                                              'label': {
+                                                'formatter': '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+                                                'backgroundColor': '#F6F8FC',
+                                                'borderColor': '#8C8D8E',
+                                                'borderWidth': 1,
+                                                'borderRadius': 4,
+                                                'rich': {
+                                                  'a': {
+                                                    color: '#6E7079',
+                                                    lineHeight: 22,
+                                                    align: 'center'
+                                                  },
+                                                  'hr': {
+                                                    borderColor: '#8C8D8E',
+                                                    width: '100%',
+                                                    borderWidth: 1,
+                                                    height: 0
+                                                  },
+                                                  'b': {
+                                                    color: '#4C5058',
+                                                    fontSize: 14,
+                                                    fontWeight: 'bold',
+                                                    lineHeight: 33
+                                                  },
+                                                  'per': {
+                                                    color: '#fff',
+                                                    backgroundColor: '#4C5058',
+                                                    padding: [3, 4],
+                                                    borderRadius: 4
+                                                  }
+                                                }
+                                              },
+                                              'data': [
+                                                { value: 32.15, name: 'Inhabitant' },
+                                                { value: 27, name: 'Transportation' },
+                                                { value: 3.27, name: 'Industry ' },
+                                                { value: 17.65, name: 'Public' },
+                                                { value: 1.06, name: 'Construction' },
+                                                { value: 0.007, name: 'Scrap and waste' },
+                                                { value: 7.02, name: 'Others' }
+                                              ]
+                                            },
+                                                        ],
+                                      'replaceChartOption':true,
+                                      }
+                                  
+                                }
+                                // jieshu
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                            "title":'五之扇形',
+                            "tab":[
+                            {
+                                "type":'grid',
+                                "columns":[
+                                {
+                                    "type":'chart',
+                                    "height":'500px',
+                                    "config":{
+                                      title: {
+                                        text: '2019年世界各国碳排放各类别占比',
+                                        subtext: '选取中美印俄四国及世界总量',
+                                        left: 'center',
+                                        top: "15%"
+                                      },
+                                      legend: {},
+                                      tooltip: {},
+                                      dataset: {
+                                        source: [
+                                          ['country', 'CHN', 'US', 'IND', 'RUS', 'EU28', 'WORLD'],
+                                          ['Power', 4584716.02, 1609620.351, 1200969.938, 842962.55, 936752.77, 13567991.97],
+                                          ['Residential', 808046.396, 608197.165, 206067.04, 172797.699, 623813.23, 3585257.504],
+                                          ['Aviation', 94006.94, 256075.05, 19239.81, 28713.66, 206986.76, 999338.02],
+                                          ['Industry', 4112954.96, 1002304.03, 753216.96, 285055.467, 634289.58, 10043485.97],
+                                          ['Ground Transport', 926599.223, 1649843.298, 300490.87, 233032.496, 882533.88, 6526975.11],
+                                        ]
+                                      },
+                                      series: [
+                                        {
+                                          type: 'pie',
+                                          radius: '20%',
+                                          center: ['25%', '30%'],
+                                                label: {
+                                                    normal: {
+                                                        formatter: 'CHN'+ '({d}%)',
+                                                        show: true,
+                                                        position: 'left'
+                                                    }
+                                               },
+                                        },
+                                        {
+                                          type: 'pie',
+                                          radius: '20%',
+                                          center: ['75%', '30%'],
+                                          encode: {
+                                            itemName: 'country',
+                                            value: 'US'
+                                          },
+                                                label: {
+                                                    normal: {
+                                                        formatter: 'US' +  '({d}%)',
+                                                        show: true,
+                                                        position: 'left'
+                                                    }
+                                               }
+                                        },
+                                        {
+                                          type: 'pie',
+                                          radius: '20%',
+                                          center: ['25%', '75%'],
+                                          encode: {
+                                            itemName: 'country',
+                                            value: 'IND',
+                                          },
+                                                label: {
+                                                    normal: {
+                                                        formatter: 'IND' + '({d}%)',
+                                                        show: true,
+                                                        position: 'left'
+                                                    }
+                                               }
+                                        },
+
+                                        {
+                                          type: 'pie',
+                                          radius: '20%',
+                                          center: ['75%', '75%'],
+                                          encode: {
+                                            itemName: 'country',
+                                            value: 'EU28'
+                                          },
+                                                label: {
+                                                    normal: {
+                                                        formatter: 'EU28' + '({d}%)',
+                                                        show: true,
+                                                        position: 'left'
+                                                    }
+                                               }
+                                        },
+                                        {
+                                          type: 'pie',
+                                          radius: '20%',
+                                          center: ['50%', '50%'],
+                                          encode: {
+                                            itemName: 'country',
+                                            value: 'WORLD'
+                                          },
+                                                label: {
+                                                    normal: {
+                                                        formatter: 'WORLD'  + '({d}%)',
+                                                        show: true,
+                                                        position: 'left'
+                                                    }
+                                               }
+                                        }
+                                      ]
+                                    }
+                                }
+                                ]
+                            }
+                            ]                            
+                        }
+                      ],
+                      "tabsMode": "line",
+                    },
+                    {
+                          "type": "button",
+                          "label": "数据来源为CEADS",
+                          "level": "primary",
+                          "className": "ml-2",
+                          "onEvent": {
+                            "click": {
+                              "actions": [
+                                {
+                                  "actionType": "url",
+                                  "url": "https://www.ceads.net.cn",
+                                  "blank": true
+                                }
+                              ]
+                            }
+                          }
+                        }
+                  ],
+                  "messages": {},
+                  "style": {
+                    "textAlign": "center",
+                    "fontWeight": "lighter"
+                  },
+                  // "subTitle": "可视化",
+                  "aside": [],
+                      "style": {
+                        "textAlign": "center",
+                        "fontWeight": "normal",
+                        // "backgroundImage": "{% static 'first_page/assets/img/white_background.jpg' %}",
+                        // "borderStyle": "solid",
+                        // "borderColor": "#b8e986",
+                    },
+
+
+                        };
+        let amisScoped = amis.embed('#root', amisJSON);
+      })();
+    </script>
+     
+            <!-- Contact-->
+        <section class="contact-section bg-black">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-map-marked-alt text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">地址</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50">中国湖北武汉市武昌区中南财经政法大学</div>
+                                <div class="small text-black-50">中国湖北武汉市洪山区中南财经政法大学</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-envelope text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">邮箱</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50"><a href="http://qq.com">1025971724@qq.com</a></div>
+                                <div class="small text-black-50"><a href="http://qq.com">hy680688@163.com</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-mobile-alt text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">电话</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50">15623928660</div>
+                                <div class="small text-black-50">15735723594</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="footer bg-black small text-center text-white-50"><div class="container px-4 px-lg-5">Copyright &copy; ZhuMaoyuan 双碳BI</div>IPC证：<a href="https://beian.miit.gov.cn/">鄂ICP备2022007503号</a></footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{% static 'sdk/china.js' %}"></script>
+        <script src="{% static 'sdk/world.js' %}"></script>
+        <!-- Core theme JS-->
+        <script src="{% static 'first_page/js/scripts.js' %}"></script>
+  </body>
+</html>

@@ -1,0 +1,424 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <title>双碳BI-碳排放交易平台</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="stylesheet" href="{% static 'sdk/sdk.css' %}" />
+    <link rel="stylesheet" href="{% static 'sdk/helper.css' %}" />
+    <link rel="stylesheet" href="{% static 'sdk/iconfont.css' %}" />
+    <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
+    <link rel="icon" type="image/x-icon" href="{% static 'first_page/assets/favicon.ico'%}" />
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="{% static 'first_page/css/styles.css' %}" rel="stylesheet" />
+    <style>
+      html,
+      body,
+      .app-wrapper {
+        position: relative;
+        width: 100%;
+        height: 140%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+
+
+  <body id="page_top">
+    <script src="{% static 'sdk/sdk.js' %}"></script>
+    <script src="http://api.map.baidu.com/api?v=2.0&ak=SGUVWq4DXvkGCwYoTYzl1d3F4TvWW0aW"></script>
+            <!-- Navigation-->
+        <div id="root" class="app-wrapper"></div>
+      <script src="{% static 'sdk/sdk.js' %}"></script>
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="/">双碳BI</a>
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="/about">关于我们</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/data_page">数据展示</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/carbon_trade">碳排放交易数据平台</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/comment">评论区</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    <script type="text/javascript">
+      (function () {
+        let amis = amisRequire('amis/embed');
+        // 通过替换下面这个配置来生成不同页面
+        let amisJSON = 
+       {
+        "type": "page",
+        "title":"碳排放交易平台",
+        "style": {
+        "textAlign": "center",
+        "fontWeight": "lighter"
+        },
+        "subTitle": "企业级",
+        "body": [
+        {
+            "type":'tabs',
+            "className":'mb-5',
+            "mode":'vertical',
+            "tabs":[
+            {
+              "title":"主要指标",
+              'tab':{
+              'type':"grid-2d",
+              'grids':[
+              {
+                'x':1,
+                'y':1,
+                'h':1,
+                "w":4,
+                'height':'auto',
+                "type": "chart",
+                "api": "/api/order/data_vis?type=daily_income_line&sid=${sid}",
+                "name":"daily_income_line",
+                "config":{
+                  "tooltip":{
+                    "trigger":'item'
+                  },
+                   "title":{
+                      "text":"每日收入"
+                   },
+                    'xAxis': {
+                      'type': 'category',
+                      'boundaryGap':false,
+                      'data': "${x_data}"
+                    },
+                    'yAxis': {
+                      'type': 'value'
+                    },
+                    'series': [
+                      {
+                        'data': "${y_data}",
+                        'type': 'line',
+
+                      }
+                    ]
+                  }
+         },
+            {
+                "x": 5,
+                "y": 1,
+                "h": 1,
+                "w": 4,
+                "type": "chart",
+                "height": "auto",
+                "api": "/api/order/data_vis?type=platform_pie&sid=${sid}",
+                "name":"platform_pie",
+                "config": {
+                  "tooltip":{
+                    "trigger":'item'
+                  },
+                  "title": {
+                    "text": "渠道来源占比"
+                  },
+                  "series": [
+                    {
+                      "type": "pie",
+                      "data": "${platform_data}",
+                      "label":{
+                        "formatter":'{b}:{d}%'
+                      }
+                    }
+                  ]
+                }
+           },        
+           {
+                "x": 9,
+                "y": 1,
+                "h": 1,
+                "w": 4,
+                'height':'auto',
+                "type": "chart",
+                "api": "/api/order/data_vis?type=product_line_income_bar&sid=${sid}",
+                "name":"product_line_income_bar",
+                "config":{
+                  "tooltip":{
+                    "trigger":'item'
+                  },
+                  "title":{
+                    "text":'各个产品线总收入'
+                  },
+                    xAxis: {
+                      type: 'category',
+                      data: "${x_data}"
+                    },
+                    yAxis: {
+                      type: 'value'
+                    },
+                    series: [
+                      {
+                        data: "${y_data}",
+                        type: 'bar',
+                        showBackground: true,
+                        backgroundStyle: {
+                          color: 'rgba(180, 180, 180, 0.2)'
+                        },
+                        
+                      }
+                    ]
+                  }
+                },
+
+              {
+                'x':1,
+                'y':2,
+                'h':1,
+                "w":12,
+                'height':'auto',
+                "align":'center',
+                "type":'service',
+                "api":'api/order/data_vis?type=total_income_text&sid=${sid}',
+                "name":'total_income_text',
+                'className':'text-primary text-3xl',
+                "body":{
+                  "type":'tpl',
+                  "tpl":"总计：${total_income}元",
+                }
+              },]
+            },
+        },
+        {
+              "title":'次要指标',
+              "tab":{
+                'type':'chart',
+                'name':'provinces_sales_map',
+                'height':"600px",
+                'api':"/api/order/data_vis?type=provinces_sales_map&sid=${sid}",
+                'config':{
+                    "backgroundColor": "transparent",
+                    'title':{
+                      'text': '全国各省销售情况',
+                      'left': 'center'
+                    },
+                    'tooltip':{
+                      'trigger': 'item'
+                    },
+                    'bmap':{
+                      'zoom': 5,
+                      'roam': true,
+                    },
+                    'visualMap':{
+                      'backgroundColor':'rgba(0,0,0,0)',
+                      'type': 'piecewise', 
+                      'show':true,
+                      'top':'top',
+                      'min':'${min_value}',
+                      'max':'${max_value}',
+                      'seriesIndex':0,
+                      'calculable':true,
+                    },
+                    'series': [{
+                      'name': '各省的销售额',
+                      'type': 'heatmap',
+                      'coordinateSystem': 'bmap',
+                      'data': '${provinces_sales}',
+                    }]
+                }
+              }
+          },
+        ],
+        },               
+            {
+              "type": "form",
+              "title": "条件搜索",
+              "actionType": "reload",
+              "target": "my_crud",
+              "body": [
+                {
+                  "type": "condition-builder",
+                  "label":"您可以在下方进行条件筛选，然后点击提交会刷新下方交易信息，点击刷新图表可以根据您的条件刷新出个性化图表；点击发送邮件按钮系统会自动把数据发送到您的邮箱。",
+                  "name": "conditions",
+                  "description": "用户自己拼查询条件,后端会自动处理您的请求！",
+                  "fields": [
+                    {
+                      "label": "金额",
+                      "type": "number",
+                      "name": "order.price",
+                      "operators": ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'between', 'not_between']
+                    },
+                    {
+                      "label": "订单状态",
+                      "type": "select",
+                      "name": "order.status",
+                      "options": [
+                        {"label": "未支付", "value": "PE"},
+                        {"label": "支付成功", "value": "SU"},
+                        {"label": "取消", "value": "CA"},
+                        {"label": "过期", "value": "OV"},
+                        {"label": "退款", "value": "RE"}
+                      ]
+                    },
+                    {
+                      "label": "下单时间",
+                      "type": "datetime",
+                      "name": "order.create_time",
+                      "format": "X",
+                      "operators": ['less', 'less_or_equal', 'greater', 'greater_or_equal', 'between', 'not_between']
+                    },
+                    {
+                      "label": "碳排放权ID",
+                      "type": "number",
+                      "name": "carbon.cid",
+                      "operators": ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'between', 'not_between']
+                    },
+                    {
+                      "label": "课程标题",
+                      "type": "text",
+                      "name": "carbon.title",
+                      "operators": ['equal', 'not_equal', 'like', 'not_like', 'starts_with', 'ends_with']
+                    },
+              ]   
+            }
+          ]
+        },
+
+        {
+          "type": "crud",
+          "name":'my_crud',
+          "api": {
+            "method":"post",
+            "url":'/api/order/filter',
+            "headers":{
+              "X-CSRFToken":"{{  csrf_token  }}"
+            }
+          },
+          "syncLocation": false,
+          "affixHeader":false,
+          "headerToolbar":[
+          {
+            "type":"action",
+            "actionType":"reload",
+            "target":'platform_pie?sid=${sid},product_line_income_bar?sid=${sid},total_income_text?sid=${sid},daily_income_line?sid=${sid},provinces_sales_map?sid=${sid}',
+            'label':'刷新图表',
+            'level':'primary'
+          },
+          {
+            'type':'action',
+            'actionType':'dialog',
+            "dialog":{
+                      "actions":[
+                      {
+                      "type": "button",
+                      "actionType":'ajax',
+                      'label':'提交',
+                      "primary":true,
+                      "type":"button",
+                      "api":{
+                         "method":"post",
+                         "url":'/api/order/send_email?sid=${sid}',
+                         "headers":{
+                           "X-CSRFToken":"{{  csrf_token  }}"
+                          },
+                      },
+                    },
+                    ], 
+                    "body":{
+                        "type":"form",                  
+                         "body": [
+                           {
+                             "type": "input-text",
+                             "name": "name",
+                             "label": "姓名："
+                           },
+                           {
+                             "name": "email",
+                             "type": "input-email",
+                             "label": "邮箱："
+                           }
+                         ],
+                       },
+                      "title": "输入您的姓名和邮箱，来接收相关数据文件",
+                      "autoFocus": true,
+                      "persistData": true,
+                      "mode": "horizontal",
+                      "className": "r",
+                      "panelClassName": "border-solid border-2 border-blue-500 rounded-xl shadow-lg",
+                    },
+            'label':'发送邮件',
+            'level':'primary',
+            }
+          ],
+          "columns": [
+                {% for field in order_fields %}
+                {
+                "name":"{{field.name}}",
+                "label":"{{field.label}}"
+                },
+                {% endfor %}
+          ]
+        }
+
+        ]
+          }
+        ;
+        let amisScoped = amis.embed('#root', amisJSON);
+      })();
+      window.echarts = amisRequire('echarts');
+    </script>
+            <!-- Contact-->
+        <section class="contact-section bg-black">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-map-marked-alt text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">地址</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50">中国湖北武汉市武昌区中南财经政法大学</div>
+                                <div class="small text-black-50">中国湖北武汉市洪山区中南财经政法大学</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-envelope text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">邮箱</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50"><a href="http://qq.com">1025971724@qq.com</a></div>
+                                <div class="small text-black-50"><a href="http://qq.com">hy680688@163.com</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-mobile-alt text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">电话</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50">15623928660</div>
+                                <div class="small text-black-50">15735723594</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="footer bg-black small text-center text-white-50"><div class="container px-4 px-lg-5">Copyright &copy; ZhuMaoyuan 双碳BI</div>IPC证：<a href="https://beian.miit.gov.cn/">鄂ICP备2022007503号</a></footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{% static 'sdk/china.js' %}"></script>
+        <script src="{% static 'sdk/world.js' %}"></script>
+        <!-- Core theme JS-->
+        <script src="{% static 'first_page/js/scripts.js' %}"></script>
+  </body>
+</html>

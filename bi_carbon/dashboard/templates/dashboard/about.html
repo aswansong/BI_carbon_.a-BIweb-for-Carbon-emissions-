@@ -1,0 +1,289 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <title>双碳BI-关于我们</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="stylesheet" href="{% static 'sdk/sdk.css' %}" />
+    <link rel="stylesheet" href="{% static 'sdk/helper.css' %}" />
+    <link rel="stylesheet" href="{% static 'sdk/iconfont.css' %}" />
+    <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="{% static 'first_page/css/styles.css' %}" rel="stylesheet" />
+    <style>
+      html,
+      body,
+      .app-wrapper {
+        position: relative;
+        width: 100%;
+        height: 130%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+
+
+  <body id="page_top">
+    <script src="{% static 'sdk/sdk.js' %}"></script>
+            <!-- Navigation-->
+        <div id="root" class="app-wrapper"></div>
+      <script src="{% static 'sdk/sdk.js' %}"></script>
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="/">双碳BI</a>
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="/about">关于我们</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/data_page">数据展示</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/carbon_trade">碳排放交易数据平台</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/comment">评论区</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    <script type="text/javascript">
+      (function () {
+        let amis = amisRequire('amis/embed');
+        // 通过替换下面这个配置来生成不同页面
+        let amisJSON = {
+              "type": "page",
+              "title": "关于我们",
+              "body": [
+                {
+                  "type": "wrapper",
+                  "body": []
+                },
+                {
+                  "type": "carousel",
+                  "options": [
+                    {
+                      "image": "{% static 'first_page/assets/img/child_paint.jpg' %}",
+                      "title": "碳排放",
+                      "description": "碳排放的图片"
+                    },
+                    {
+                      "image": "{% static 'first_page/assets/img/CEADs.png'%}",
+                      "title": "CEADs",
+                      "description": "合作方链接",
+                      "href":"https://www.ceads.net.cn/"
+                    },
+                    {
+                      "image": "{% static 'first_page/assets/img/demo-image-02.jpg'%}",
+                      "title": "碳排放图片",
+                      "description": "ok"
+                    }
+                  ],
+                  'height':"450",
+                  "className": "bg-white",
+                  // "thumbMode": "cover",
+                  'animation':'slide',
+                },
+                {
+                  "type":"wrapper",
+                  "body":[
+                    {
+                    "type": "tabs",
+                    "tabs": [
+                      {
+                        "title": "双碳之梦",
+                        "body": [
+                          {
+                            "type": "tpl",
+                            "tpl": "“双碳”",
+                            "inline": false,
+                            "style": {},
+                            "wrapperComponent": "h2"
+                          },
+                          {
+                            "type": "video",
+                            "src": "{% static 'first_page/assets/video/carbon_two.mp4'%}",
+                            "poster": "{% static 'first_page/assets/img/demo-image-02.jpg'%}",
+                            "aspectRatio": "auto",
+                            "autoPlay": true,
+                          },
+                          {
+                            "type": "tpl",
+                            "tpl": "“来源bilibili：https://www.bilibili.com/video/BV1NL4y1J7pD?spm_id_from=333.337.search-card.all.click”",
+                            "inline": false,
+                          }
+                        ],
+                        "className": "m-r p-lg"
+                      },
+                      {
+                        "title": "巴黎协定",
+                        "body": [
+                          {
+                            "type": "tpl",
+                            "tpl": "巴黎协定",
+                            "inline": false,
+                            "style": {},
+                            "wrapperComponent": "h2"
+                          },
+                          {
+                            "type": "video",
+                            "autoPlay": false,
+                            "src": "{% static 'first_page/assets/video/Paris_agerement.mp4'%}",
+                            "poster": "{% static 'first_page/assets/img/demo-image-02.jpg'%}",
+                            "aspectRatio": "auto"
+                          },
+                          {
+                            "type": "tpl",
+                            "tpl": "“来源bilibili：https://www.bilibili.com/video/BV1fx411h7mM?spm_id_from=333.337.search-card.all.click”",
+                            "inline": false,
+                          }
+                        ],
+                        "className": "m p-lg",
+                      }
+                    ],
+                    "tabsMode": "vertical",
+                    "className": "no-bg",
+                    }
+                  ],
+                  // "style":{
+                  //   "marginLeft": "100px",
+                  //   "marginRight": "100px"
+                  // }
+
+                },
+
+                {
+                  "type": "grid",
+                  "columns": [
+                    {
+                      "body": [
+                        {
+                          "type": "image"
+                        }
+                      ],
+                      "md": "auto",
+                      "valign": "middle"
+                    },
+                    {
+                      "body": [
+                        {
+                          "type": "markdown",
+                          "value": "## 朱茂源\n---\n**BI平台创始人**，负责网站整体的搭建和设计"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "grid",
+                  "columns": [
+                    {
+                      "body": [
+                        {
+                          "type": "image"
+                        }
+                      ],
+                      "md": "auto",
+                      "valign": "middle"
+                    },
+                    {
+                      "body": [
+                        {
+                          "type": "markdown",
+                          "value": "## 韩义\n---\n**BI平台数据分析师**，负责图表制作和数据分析"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "grid",
+                  "columns": [
+                    {
+                      "body": [
+                        {
+                          "type": "image"
+                        }
+                      ],
+                      "md": "auto",
+                      "valign": "middle"
+                    },
+                    {
+                      "body": [
+                        {
+                          "type": "markdown",
+                          "value": "## CEADs团队\n---\n**BI平台数据提供方，合作方**，欢迎登录[CEADs](https://www.ceads.net.cn/)查看最新的碳数据文件"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "style": {
+                "textAlign": "center"
+              },
+              "aside": []
+            };
+        let amisScoped = amis.embed('#root', amisJSON);
+      })();
+    </script>
+     
+            <!-- Contact-->
+        <section class="contact-section bg-black">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-map-marked-alt text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">地址</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50">中国湖北武汉市武昌区中南财经政法大学</div>
+                                <div class="small text-black-50">中国湖北武汉市洪山区中南财经政法大学</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-envelope text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">邮箱</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50"><a href="http://qq.com">1025971724@qq.com</a></div>
+                                <div class="small text-black-50"><a href="http://qq.com">hy680688@163.com</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-mobile-alt text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">电话</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50">15623928660</div>
+                                <div class="small text-black-50">15735723594</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="footer bg-black small text-center text-white-50"><div class="container px-4 px-lg-5">Copyright &copy; ZhuMaoyuan 双碳BI</div>IPC证：<a href="https://beian.miit.gov.cn/">鄂ICP备2022007503号</a></footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{% static 'sdk/china.js' %}"></script>
+        <script src="{% static 'sdk/world.js' %}"></script>
+        <!-- Core theme JS-->
+        <script src="{% static 'first_page/js/scripts.js' %}"></script>
+  </body>
+</html>
