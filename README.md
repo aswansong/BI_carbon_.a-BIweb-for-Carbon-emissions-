@@ -1,3 +1,5 @@
+[**简体中文**](#-bi-carbon-基于双碳大数据的可视化bi系统) | [**English**](#-bi-carbon-a-visual-bi-system-for-dual-carbon-big-data)
+
 # BI-carbon: 基于“双碳”大数据的可视化BI系统
 
 [![Python](https://img.shields.io/badge/Python-3.8-blue.svg)](https://www.python.org/)
@@ -130,3 +132,139 @@ python manage.py qcluster
 ## 📄 许可
 
 本项目采用 [MIT License](https://opensource.org/licenses/MIT) 开源许可。
+
+---
+<br>
+
+# BI-carbon: A Visual BI System for "Dual Carbon" Big Data
+
+[![Python](https://img.shields.io/badge/Python-3.8-blue.svg)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-4.0.2-green.svg)](https://www.djangoproject.com/)
+[![Frontend](https://img.shields.io/badge/Frontend-Amis%20%26%20Bootstrap-purple.svg)](https://aisuda.bce.baidu.com/amis/zh-CN/docs/index)
+[![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+
+---
+
+**BI-carbon** is a non-profit, lightweight Business Intelligence (BI) platform designed to integrate China's "dual carbon" strategic goals with big data visualization technology. We are committed to breaking down the barriers of traditional data platforms, enabling enterprises, researchers, government, and the general public to access and understand carbon emission data in the most intuitive way.
+
+This platform is based on authorized data from the [China Carbon Accounting Database (CEADs)](https://www.ceads.net.cn/) and provides data visualization, in-depth analysis reports, and custom data exploration through a user-friendly interface to promote the popularization and exchange of "dual carbon" knowledge.
+
+## ✨ Main Features
+
+* **Multi-dimensional Data Visualization**: Provides dynamic charts and heatmaps based on ECharts and Baidu Maps API for intuitive display of carbon emission data across provinces and cities.
+* **Data Analysis Reports**: Automatically generates data analysis reports for key indicators to help users quickly gain insights from the data.
+* **Carbon Emission Trading Data Platform**:
+    * Powerful **conditional filtering** function for users to query and filter data as needed.
+    * **One-click generation of visual charts** (bar charts, pie charts, line charts, etc.) based on filtered results.
+    * Supports **asynchronously sending filtered data** in `.csv` format to a specified email address.
+* **Open Comment Section**: Provides an interactive community where users can log in, express opinions, and exchange views.
+* **Admin Backend System**: Based on Django's built-in admin backend, allowing administrators to directly perform CRUD operations on the database.
+
+## 🛠️ Tech Stack
+
+* **Backend**: Django (4.0.2)
+* **Frontend**: [Amis](https://aisuda.bce.baidu.com/amis/zh-CN/docs/index) (Baidu's low-code frontend framework) + Bootstrap
+* **Database**: SQLite (Lightweight and convenient, perfectly matching the project's positioning)
+* **Core Libraries**:
+    * `pandas` & `numpy`: For efficient data processing and analysis.
+    * `django-pandas`: Simplifies the conversion between Django ORM and Pandas DataFrame.
+    * `django-q`: Implements asynchronous tasks such as sending emails.
+    * `Faker`: For generating mock data needed for testing.
+* **Data Caching**: Utilizes Django's database cache backend to significantly improve data query and chart generation efficiency (nearly 6x speed improvement in tests).
+
+## 📸 System Screenshots
+
+| Homepage                                       | Data Display & Analysis Report                               |
+| :----------------------------------------- | :------------------------------------------------ |
+| ![Homepage Screenshot](pic/交互型碳排放BI平台1.png)      | ![Data Display Screenshot](pic/数据展示.png)    |
+| **Carbon Emission Trading Data Platform** | **Comment Section** |
+| ![Trading Platform Screenshot](pic/交互型碳排放BI平台3.png) | ![pic/评论区.png) |
+
+## 🚀 Installation and Startup
+
+Please ensure you have **Python 3.8** installed on your system.
+
+### 1. Clone the repository
+
+```bash
+git clone [https://github.com/your-username/bi_carbon.git](https://github.com/your-username/bi_carbon.git)
+cd bi_carbon
+```
+
+### 2. Install dependencies
+
+The required third-party libraries are listed in `requirements.txt`.
+
+```bash
+pip install -r requirements.txt
+```
+
+<details>
+<summary>Click to see the detailed dependency list</summary>
+
+| Package       | Version  |
+| :------------ | :------- |
+| datetime      | 4.4      |
+| django        | 4.0.2    |
+| django_pandas | 0.6.6    |
+| django-q      | 1.3.9    |
+| Faker         | 13.3.1   |
+| numpy         | 1.19.3   |
+| pandas        | 1.4.1    |
+| pytz          | 2021.3   |
+| uuid          | 1.30     |
+| yagmail       | 0.15.277 |
+
+</details>
+
+### 3. Initialize the database
+
+```bash
+# Generate migration files
+python manage.py makemigrations
+
+# Apply database migrations
+python manage.py migrate
+```
+
+### 4. (Optional) Generate mock data
+
+To test the "Carbon Emission Trading Data Platform", you can generate a specified number of mock order data.
+
+```bash
+# Generate 2000 mock data entries
+python manage.py addfakeorders 2000
+```
+
+### 5. Start the services
+
+You need to start two services: the Django Web service and the Django-Q asynchronous task service.
+
+**Terminal 1: Start the Web Service**
+
+```bash
+python manage.py runserver
+```
+
+The service will run at `http://127.0.0.1:8000/`.
+
+**Terminal 2: Start the Asynchronous Task Cluster (for sending emails)**
+
+```bash
+python manage.py qcluster
+```
+
+Now, open your browser and navigate to <http://127.0.0.1:8000/> to get started!
+
+## 🤝 Contributors
+
+* **Zhu Maoyuan (Team Leader)**: Overall project design, frontend and backend development, database design, asynchronous task system implementation.
+
+## ❤️ Acknowledgements
+
+* Thanks to the **China Carbon Accounting Database (CEADs)** team for data authorization and support.
+* Thanks to the Baidu **Amis** team for developing an excellent low-code frontend framework.
+
+## 📄 License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
